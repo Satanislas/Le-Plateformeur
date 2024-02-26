@@ -4,16 +4,23 @@ using UnityEngine;
 
 public class LevelParser : MonoBehaviour
 {
-    public string filename;
+    public static string filename;
     public GameObject rockPrefab;
     public GameObject brickPrefab;
     public GameObject questionBoxPrefab;
     public GameObject stonePrefab;
+    public GameObject spikePrefab;
+    public GameObject polePrefab;
     public Transform environmentRoot;
+
+    public TextAsset file1;
+    public TextAsset file2;
+    public static bool loadSecondLevel;
 
     // --------------------------------------------------------------------------
     void Start()
     {
+        filename ??= "Test";
         LoadLevel();
     }
 
@@ -29,21 +36,30 @@ public class LevelParser : MonoBehaviour
     // --------------------------------------------------------------------------
     private void LoadLevel()
     {
-        string fileToParse = $"{Application.dataPath}{"/Resources/"}{filename}.txt";
-        Debug.Log($"Loading level file: {fileToParse}");
+        //string fileToParse = $"{Application.dataPath}{"/Asset/"}{filename}.txt";
+        //Debug.Log($"Loading level file: {fileToParse}");
 
         Stack<string> levelRows = new Stack<string>();
 
-        // Get each line of text representing blocks in our level
-        using (StreamReader sr = new StreamReader(fileToParse))
-        {
-            string line = "";
-            while ((line = sr.ReadLine()) != null)
-            {
-                levelRows.Push(line);
-            }
+        // // Get each line of text representing blocks in our level
+        // using (StreamReader sr = new StreamReader(fileToParse))
+        // {
+        //     string line = "";
+        //     while ((line = sr.ReadLine()) != null)
+        //     {
+        //         levelRows.Push(line);
+        //     }
+        //
+        //     sr.Close();
+        // }
 
-            sr.Close();
+        TextAsset text = loadSecondLevel ? file2 : file1;
+
+        string[] lines = text.text.Split('\n');
+
+        foreach (var line in lines)
+        {
+            levelRows.Push(line);
         }
 
         int row = 0;
@@ -74,6 +90,12 @@ public class LevelParser : MonoBehaviour
                         break;
                     case 's':
                         block = Instantiate(stonePrefab,position,Quaternion.identity,environmentRoot);
+                        break;
+                    case 'k':
+                        block = Instantiate(spikePrefab,position,Quaternion.identity,environmentRoot);
+                        break;
+                    case 'p':
+                        block = Instantiate(polePrefab,position,Quaternion.identity,environmentRoot);
                         break;
                 }
                 

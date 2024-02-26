@@ -4,6 +4,10 @@ using UnityEngine;
 
 public class Block : MonoBehaviour
 {
+    public Material stone;
+    public GameObject brickExplosionPrefab;
+    public float brickExplostionTime;
+    
     public enum Type{
         Question,
         Brick,
@@ -12,21 +16,11 @@ public class Block : MonoBehaviour
 
     public Type type;
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
 
     public void DestroyBlock()
     {
+        GameObject effect = Instantiate(brickExplosionPrefab, transform.position, Quaternion.identity);
+        GameManager.KillInThreeTwoOne(effect,brickExplostionTime);
         Destroy(gameObject);
     }
 
@@ -37,9 +31,12 @@ public class Block : MonoBehaviour
             case Type.Question:
                 Debug.Log("+1 coin");
                 GameManager.gm.CollectCoin(transform.position + new Vector3(0,0,-0.1f));
+                type = Type.Immobile;
+                GetComponent<Renderer>().material = stone;
                 break;
             case Type.Brick:
                 Debug.Log("Breaking brick");
+                GameManager.gm.addScore(100);
                 DestroyBlock();
                 break;
         }
